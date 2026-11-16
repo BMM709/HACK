@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALL HACK - นี่คือวิธีแฮ็กพื้นฐาน</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        terminal: {
+                            bg: '#050505',
+                            panel: '#0c100c',
+                            border: '#00ff6633',
+                            green: '#00ff66',
+                            dimGreen: '#00aa44',
+                            darkGreen: '#003311'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['Courier New', Courier, monospace, 'Inter']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Terminal Glow & Scanline effects */
+        body {
+            background-color: #050505;
+            color: #00ff66;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.6), 0 0 20px rgba(0, 255, 102, 0.3);
+        }
+        .glow-box {
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.15);
+            border: 1px solid rgba(0, 255, 102, 0.3);
+        }
+        .glow-box:hover {
+            box-shadow: 0 0 25px rgba(0, 255, 102, 0.4);
+            border-color: rgba(0, 255, 102, 0.8);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #003311;
+            border: 1px solid #00ff66;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00ff66;
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-x-hidden">
+
+    <!-- Scanlines overlay -->
+    <div class="fixed inset-0 scanlines z-50 h-full w-full"></div>
+
+    <!-- Matrix Background Canvas -->
+    <canvas id="matrix-canvas" class="fixed inset-0 z-0 opacity-20 pointer-events-none"></canvas>
+
+    <!-- Main Container -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header Section -->
+        <header class="text-center mb-12 border-b border-terminal-green/30 pb-8">
+            <div class="inline-block bg-terminal-darkGreen text-terminal-green px-4 py-1 rounded text-xs tracking-widest mb-3 uppercase border border-terminal-green/40">
+                [ SECURITY EDUCATION MODULE v2.5 ]
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-black tracking-wider glow-text uppercase mb-3">
+                &gt; ALL HACK _
+            </h1>
+            <p class="text-terminal-dimGreen text-lg sm:text-xl tracking-wide max-w-2xl mx-auto">
+                นี่คือวิธี แฮ็กพื้นฐาน — คัมภีร์เจาะระบบเพื่อการศึกษาและป้องกันภัยไซเบอร์
+            </p>
+            <div class="mt-4 text-xs text-terminal-dimGreen/70 flex justify-center items-center gap-4 flex-wrap">
+                <span><i class="fa-solid fa-shield-halved text-terminal-green"></i> EDUCATIONAL PURPOSE ONLY</span>
+                <span><i class="fa-solid fa-terminal text-terminal-green"></i> 16 VULNERABILITY VECTORS</span>
+                <span><i class="fa-solid fa-user-secret text-terminal-green"></i> CYBER DEFENSE</span>
+            </div>
+        </header>
+
+        <!-- Search / Filter Bar -->
+        <div class="mb-8 max-w-xl mx-auto">
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-terminal-dimGreen">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" id="searchInput" placeholder="ค้นหาวิธีแฮ็ก หรือ ช่องโหว่... (เช่น Phishing, SQL)" 
+                    class="w-full bg-terminal-panel text-terminal-green placeholder-terminal-dimGreen/60 text-sm rounded-lg pl-11 pr-4 py-3 border border-terminal-green/40 focus:outline-none focus:border-terminal-green glow-box transition-all">
+            </div>
+        </div>
+
+        <!-- Cards Grid (16 Hacking Methods) -->
+        <div id="hackGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Cards will be dynamically injected via JS -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-16 text-center border-t border-terminal-green/20 pt-6 text-xs text-terminal-dimGreen">
+            <p>&copy; 2026 ALL HACK SYSTEM. พัฒนาขึ้นเพื่อให้ความรู้ความเข้าใจด้านความปลอดภัยทางไซเบอร์ (Cybersecurity Awareness)</p>
+            <p class="mt-1 text-terminal-green/50">"Know thy enemy, know thyself."</p>
+        </footer>
+    </div>
+
+    <!-- Modal for Detailed View -->
+    <div id="detailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+        <div class="bg-terminal-panel border border-terminal-green rounded-xl max-w-2xl w-full p-6 sm:p-8 glow-box relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-terminal-dimGreen hover:text-terminal-green text-xl font-bold transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modalContent">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification / Info Toast (Instead of alert) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-terminal-panel border border-terminal-green text-terminal-green px-6 py-3 rounded-lg glow-box transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3">
+        <i class="fa-solid fa-circle-info text-terminal-green text-lg"></i>
+        <span id="toastMessage">คัดลอกข้อมูลสำเร็จ!</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Matrix Background Animation
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+        const alphabet = katakana + latin;
+
+        const fontSize = 14;
+        let columns = canvas.width / fontSize;
+        const rainDrops = [];
+
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00ff66';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 30);
+
+        // 16 Basic Hacking Techniques Database
+        const hackingMethods = [
+            {
+                id: 1,
+                title: "Phishing (ฟิชชิ่ง)",
+                category: "Social Engineering",
+                icon: "fa-fish",
+                shortDesc: "การหลอกลวงผ่านอีเมลหรือเว็บไซต์ปลอม เพื่อขโมยข้อมูลส่วนตัว รหัสผ่าน หรือข้อมูลบัตรเครดิต",
+                howItWorks: "แฮกเกอร์ส่งลิงก์อีเมลปลอมที่ทำเลียนแบบธนาคารหรือโซเชียลมีเดียชื่อดัง เมื่อเหยื่อกรอกข้อมูลลงไป ข้อมูลจะถูกส่งตรงไปยังแฮกเกอร์ทันที",
+                prevention: "ตรวจสอบ URL ให้ละเอียดก่อนกรอกข้อมูล, เปิดใช้งาน 2FA, และไม่คลิกแอปพลิเคชันหรือลิงก์แปลกปลอมจากแหล่งที่ไม่รู้จัก"
+            },
+            {
+                id: 2,
+                title: "Brute Force Attack (บลูทฟอร์ซ)",
+                category: "Credential Access",
+                icon: "fa-key",
+                shortDesc: "การใช้โปรแกรมอัตโนมัติสุ่มลองเดารหัสผ่านซ้ำๆ จนกว่าจะเจอชุดรหัสที่ถูกต้อง",
+                howItWorks: "สคริปต์หรือเครื่องมือเช่น Hydra จะทำการทดลองผสมผสานตัวอักษร ตัวเลข และสัญลักษณ์เป็นล้านๆ ครั้งต่อวินาทีเพื่อเข้าสู่ระบบ",
+                prevention: "ใช้รหัสผ่านที่ยาวและซับซ้อน (ผสมอักขระพิเศษ ตัวพิมพ์เล็ก/ใหญ่), จำกัดจำนวนครั้งในการกรอกรหัสผิด (Rate Limiting), และใช้ CAPTCHA"
+            },
+            {
+                id: 3,
+                title: "SQL Injection (SQLi)",
+                category: "Web Vulnerability",
+                icon: "fa-database",
+                shortDesc: "การแทรกคำสั่ง SQL อันตรายผ่านช่องกรอกข้อมูล เพื่อเจาะฐานข้อมูลของเว็บไซต์",
+                howItWorks: "ช่องค้นหาหรือช่องล็อกอินที่ไม่ตรวจสอบความถูกต้องของข้อมูล (Input Validation) จะยอมรับโค้ด SQL และสั่งประมวลผล ทำให้แฮกเกอร์เข้าถึงหรือทำลายฐานข้อมูลได้",
+                prevention: "ใช้ Prepared Statements หรือ Parameterized Queries ในการเขียนโปรแกรม, ตรวจสอบและกรองข้อมูลนำเข้าเสมอ (Sanitization)"
+            },
+            {
+                id: 4,
+                title: "Cross-Site Scripting (XSS)",
+                category: "Web Vulnerability",
+                icon: "fa-code",
+                shortDesc: "การฝัง JavaScript อันตรายลงในเว็บไซต์ เพื่อขโมยคุกกี้ (Cookies) หรือ Session ของผู้ใช้งาน",
+                howItWorks: "เมื่อผู้ใช้เข้าชมหน้าเว็บที่มีสคริปต์ฝังอยู่ โค้ดนั้นจะรันบนเบราว์เซอร์ของเหยื่อ และสามารถส่งข้อมูลเซสชันกลับไปให้ผู้ไม่หวังดีได้",
+                prevention: "เข้ารหัสข้อมูลขาออก (Output Encoding), ใช้ Content Security Policy (CSP), และกรองสคริปต์ออกจากช่องแสดงความคิดเห็น"
+            },
+            {
+                id: 5,
+                title: "Man-in-the-Middle (MitM)",
+                category: "Network Attack",
+                icon: "fa-user-secret",
+                shortDesc: "การแอบดักฟัง หรือขโมยข้อมูลระหว่างการสื่อสารของอุปกรณ์สองเครื่องโดยที่เหยื่อไม่รู้ตัว",
+                howItWorks: "แฮกเกอร์แอบเชื่อมต่อเข้ามาอยู่ตรงกลางเครือข่าย Wi-Fi สาธารณะ หรือทำ ARP Spoofing เพื่อสอดส่องและบันทึกข้อมูลการรับ-ส่ง",
+                prevention: "ใช้โปรโตคอลเข้ารหัส HTTPS เสมอ, หลีกเลี่ยง Wi-Fi สาธารณะที่ไม่ปลอดภัย หรือใช้งาน VPN ที่เชื่อถือได้"
+            },
+            {
+                id: 6,
+                title: "Denial-of-Service (DoS / DDoS)",
+                category: "Network Attack",
+                icon: "fa-server",
+                shortDesc: "การส่งคำขอเข้าสู่ระบบหรือเซิร์ฟเวอร์พร้อมๆ กันจำนวนมหาศาล จนเซิร์ฟเวอร์ล่มและใช้งานไม่ได้",
+                howItWorks: "ระดมส่งทราฟฟิกปลอมจากคอมพิวเตอร์หลายเครื่อง (Botnet) ถล่มเป้าหมายเพื่อทำให้ทรัพยากรระบบหมดลง (CPU/RAM/Bandwidth เต็ม)",
+                prevention: "ใช้บริการป้องกัน DDoS จากผู้ให้บริการคลาวด์ระดับโลก (เช่น Cloudflare, AWS Shield) และตั้งค่าระบบ Firewall กรองทราฟฟิกผิดปกติ"
+            },
+            {
+                id: 7,
+                title: "Social Engineering (วิศวกรรมสังคม)",
+                category: "Human Hacking",
+                icon: "fa-comments",
+                shortDesc: "การใช้จิตวิทยา หลอกลวง หรือปั่นหัวมนุษย์เพื่อให้ยอมเปิดเผยข้อมูลลับหรือรหัสผ่านด้วยตัวเอง",
+                howItWorks: "แฮกเกอร์อาจแอบอ้างเป็นเจ้าหน้าที่ IT, ผู้บริหาร หรือเพื่อนร่วมงาน โทรมาขอรหัสผ่านหรืออ้างเหตุฉุกเฉินเพื่อให้เหยื่อตายใจ",
+                prevention: "สร้างวัฒนธรรมความตระหนักรู้ด้านความปลอดภัย (Security Awareness Training), ตรวจสอบตัวตนผู้ติดต่อก่อนให้ข้อมูลสำคัญทุกครั้ง"
+            },
+            {
+                id: 8,
+                title: "Malware & Ransomware (มัลแวร์และแรนซัมแวร์)",
+                category: "Software Threat",
+                icon: "fa-virus",
+                shortDesc: "ซอฟต์แวร์ประสงค์ร้ายที่เข้ามาทำลายระบบ หรือเข้ารหัสไฟล์ข้อมูลเพื่อเรียกค่าไถ่",
+                howItWorks: "มลแวร์มักติดมากับไฟล์แนบอีเมลปลอม ซอฟต์แวร์เถื่อน หรือเว็บไซต์อันตราย เมื่อรันแล้วจะทำการล็อกไฟล์และเรียกเงินสกุลดิจิทัล",
+                prevention: "ติดตั้งโปรแกรม Antivirus อัปเดตสม่ำเสมอ, สำรองข้อมูลสำคัญเก็บไว้แบบ Offline (Backup), และไมิดเปิดไฟล์แปลกปลอม"
+            },
+            {
+                id: 9,
+                title: "Credential Stuffing",
+                category: "Credential Access",
+                icon: "fa-id-card",
+                shortDesc: "การนำชุดข้อมูลรหัสผ่านและอีเมลที่รั่วไหลจากเว็บหนึ่ง ไปลองสุ่มล็อกอินเข้าอีกหลายๆ เว็บไซต์",
+                howItWorks: "เนื่องจากผู้ใช้นิยมใช้รหัสผ่านชุดเดียวกันซ้ำๆ หลายเว็บไซต์ แฮกเกอร์จึงใช้บอทอัตโนมัติทดลองล็อกอินข้ามแพลตฟอร์ม",
+                prevention: "ห้ามใช้รหัสผ่านซ้ำกันในหลายๆ เว็บไซต์ (ใช้ Password Manager ช่วยจำ), เปิดใช้งานระบบยืนยันตัวตนสองขั้นตอน (2FA)"
+            },
+            {
+                id: 10,
+                title: "Session Hijacking",
+                category: "Web Vulnerability",
+                icon: "fa-shield-dog",
+                shortDesc: "การขโมยหรือปลอมแปลง Session ID ของผู้ใช้ เพื่อแอบอ้างตัวตนเข้าสู่ระบบโดยไม่ต้องใช้รหัสผ่าน",
+                howItWorks: "แฮกเกอร์ขโมยคุกกี้เซสชันผ่านช่องทาง XSS หรือดักจับแพ็กเก็ตผ่าน Wi-Fi แล้วนำไปสวมรอยเป็นเจ้าของบัญชีนั้นๆ",
+                prevention: "ใช้ Secure และ HttpOnly flags สำหรับ Cookies, บังคับใช้ HTTPS, และตั้งค่าเวลาหมดอายุเซสชันให้สั้นลงเมื่อไม่มีการใช้งาน"
+            },
+            {
+                id: 11,
+                title: "DNS Spoofing / Cache Poisoning",
+                category: "Network Attack",
+                icon: "fa-globe",
+                shortDesc: "การปลอมแปลงตาราง DNS เพื่อเปลี่ยนเส้นทางผู้ใช้จากเว็บไซต์จริงไปยังเว็บไซต์ปลอม",
+                howItWorks: "โจมตีเซิร์ฟเวอร์ DNS หรือแคชในเราเตอร์ เพื่อให้เมื่อเหยื่อพิมพ์ชื่อเว็บ (เช่น bank.com) ระบบจะพาไปที่ไอพีแอดเดรสของแฮกเกอร์แทน",
+                prevention: "ใช้บริการ DNS ที่ปลอดภัยและน่าเชื่อถือ (เช่น Cloudflare 1.1.1.1 หรือ Google 8.8.8.8), ตรวจสอบใบรับรอง SSL ของเว็บไซต์"
+            },
+            {
+                id: 12,
+                title: "Zero-Day Exploit",
+                category: "Advanced Threat",
+                icon: "fa-bomb",
+                shortDesc: "การโจมตีผ่านช่องโหว่ของซอฟต์แวร์ที่เพิ่งค้นพบ และผู้พัฒนาซอฟต์แวร์ยังไม่ทันได้ออกตัวอัปเดตแก้ไข",
+                howItWorks: "แฮกเกอร์เก็บช่องโหว่ลับนี้ไว้ใช้ประโยชน์ก่อนที่โลกจะรู้ ทำให้ระบบป้องกันทั่วไปไม่สามารถตรวจจับได้ทัน",
+                prevention: "อัปเดตระบบปฏิบัติการและซอฟต์แวร์ให้เป็นเวอร์ชันล่าสุดอยู่เสมอ, ใช้ระบบตรวจจับพฤติกรรมผิดปกติ (EDR/IDS)"
+            },
+            {
+                id: 13,
+                title: "Packet Sniffing",
+                category: "Network Attack",
+                icon: "fa-binoculars",
+                shortDesc: "การใช้เครื่องมือดักจับข้อมูล (Packets) ที่วิ่งผ่านเครือข่ายคอมพิวเตอร์เพื่อสกัดดูข้อมูลลับ",
+                howItWorks: "เครื่องมือเช่น Wireshark ถูกใช้เปิดโหมด Promiscuous บนการ์ดแลนเพื่อมองเห็นข้อมูลทุกอย่างที่วิ่งผ่านเครือข่ายท้องถิ่น",
+                prevention: "เข้ารหัสข้อมูลทุกชนิดก่อนส่งผ่านเครือข่าย (เช่น TLS, VPN, SSH), ปิดการใช้งานโปรโตคอลที่ไม่ปลอดภัย (Telnet, HTTP)"
+            },
+            {
+                id: 14,
+                title: "Buffer Overflow",
+                category: "System Vulnerability",
+                icon: "fa-memory",
+                shortDesc: "การป้อนข้อมูลใส่หน่วยความจำเกินขนาดที่กำหนด เพื่อให้ระบบรันคำสั่งอันตรายที่แฮกเกอร์ต้องการ",
+                howItWorks: "โปรแกรมที่เขียนไม่รัดกุมเมื่อรับข้อมูลเกินขนาดจะทำให้ข้อมูลล้นไปทับพื้นที่หน่วยความจำส่วนควบคุม ส่งผลให้ควบคุมโปรแกรมได้",
+                prevention: "ใช้ภาษาโปรแกรมที่มีระบบจัดการหน่วยความจำปลอดภัย, ตรวจสอบขนาดข้อมูลนำเข้า (Bounds Checking), และเปิดใช้ DEP/ASLR"
+            },
+            {
+                id: 15,
+                title: "Insider Threat",
+                category: "Human Hacking",
+                icon: "fa-user-tie",
+                shortDesc: "การเจาะระบบหรือขโมยข้อมูลโดยบุคลากรภายในองค์กรที่มีสิทธิ์เข้าถึงระบบอยู่แล้ว",
+                howItWorks: "พนักงาน ลูกจ้าง หรือผู้รับเหมา ที่มีความแค้น แรงจูงใจทางการเงิน หรือถูกซื้อตัว ใช้สิทธิ์ที่มีในการโจมตีหรือขโมยความลับ",
+                prevention: "ใช้หลักการสิทธิ์น้อยที่สุด (Principle of Least Privilege), ตรวจสอบบันทึกการใช้งาน (Audit Logs), และตรวจสอบประวัติพนักงาน"
+            },
+            {
+                id: 16,
+                title: "IoT Hacking (การแฮแต่อุปกรณ์อัจฉริยะ)",
+                category: "Hardware Attack",
+                icon: "fa-camera-retro",
+                shortDesc: "การเจาะช่องโหว่ของอุปกรณ์อัจฉริยะในบ้าน (เช่น กล้องวงจรปิด, หลอดไฟ, เราเตอร์) ที่มีความปลอดภัยต่ำ",
+                howItWorks: "อุปกรณ์ IoT ส่วนใหญ่ยังใช้รหัสผ่านโรงงานเดิม (เช่น admin/admin) แฮกเกอร์จึงสแกนหาแล้วเข้าควบคุมเพื่อนำไปทำบอทเน็ต",
+                prevention: "เปลี่ยนรหัสผ่านเริ่มต้นของอุปกรณ์ IoT ทันทีที่ติดตั้ง, ปิดพอร์ตที่ไม่ได้ใช้งาน, และอัปเดตเฟิร์มแวร์สม่ำเสมอ"
+            }
+        ];
+
+        // Render Cards Function
+        const hackGrid = document.getElementById('hackGrid');
+
+        function renderCards(items) {
+            hackGrid.innerHTML = '';
+            if(items.length === 0) {
+                hackGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12 text-terminal-dimGreen">
+                        <i class="fa-solid fa-triangle-exclamation text-3xl mb-3"></i>
+                        <p>ไม่พบรายการแฮ็กที่ค้นหา...</p>
+                    </div>
+                `;
+                return;
+            }
+
+            items.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-terminal-panel border border-terminal-green/30 rounded-lg p-5 glow-box flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 cursor-pointer group";
+                card.onclick = () => openModal(item);
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="text-xs font-mono bg-terminal-darkGreen text-terminal-green px-2 py-0.5 rounded border border-terminal-green/30">
+                                #${String(item.id).padStart(2, '0')}
+                            </span>
+                            <span class="text-xs text-terminal-dimGreen uppercase tracking-wider">
+                                ${item.category}
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded bg-terminal-darkGreen border border-terminal-green/50 flex items-center justify-center text-terminal-green group-hover:bg-terminal-green group-hover:text-black transition-colors">
+                                <i class="fa-solid ${item.icon} text-lg"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-terminal-green group-hover:glow-text transition-all leading-tight">
+                                ${item.title}
+                            </h3>
+                        </div>
+                        <p class="text-terminal-dimGreen text-xs sm:text-sm line-clamp-3 mb-4">
+                            ${item.shortDesc}
+                        </p>
+                    </div>
+                    <div class="border-t border-terminal-green/20 pt-3 flex items-center justify-between text-xs text-terminal-green">
+                        <span class="group-hover:underline flex items-center gap-1">
+                            ดูข้อมูลเชิงลึก <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </span>
+                        <span class="text-terminal-dimGreen text-[10px]">[SECURE]</span>
+                    </div>
+                `;
+                hackGrid.appendChild(card);
+            });
+        }
+
+        // Initial render
+        renderCards(hackingMethods);
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            const filtered = hackingMethods.filter(item => 
+                item.title.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query) ||
+                item.shortDesc.toLowerCase().includes(query)
+            );
+            renderCards(filtered);
+        });
+
+        // Modal Logic
+        const detailModal = document.getElementById('detailModal');
+        const modalContent = document.getElementById('modalContent');
+
+        function openModal(item) {
+            modalContent.innerHTML = `
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded bg-terminal-darkGreen border border-terminal-green flex items-center justify-center text-terminal-green text-xl">
+                        <i class="fa-solid ${item.icon}"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs text-terminal-dimGreen uppercase tracking-widest">[ METHOD #${String(item.id).padStart(2, '0')} - ${item.category} ]</span>
+                        <h2 class="text-2xl font-bold text-terminal-green glow-text">${item.title}</h2>
+                    </div>
+                </div>
+                
+                <div class="space-y-4 text-sm">
+                    <div class="bg-black/40 border border-terminal-green/30 p-4 rounded">
+                        <h4 class="text-terminal-green font-bold mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-question"></i> ภาพรวม / คำอธิบาย:
+                        </h4>
+                        <p class="text-terminal-dimGreen leading-relaxed">${item.shortDesc}</p>
+                    </div>
+
+                    <div class="bg-black/40 border border-terminal-green/30 p-4 rounded">
+                        <h4 class="text-terminal-green font-bold mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-gears"></i> วิธีการทำงาน (How it works):
+                        </h4>
+                        <p class="text-terminal-dimGreen leading-relaxed">${item.howItWorks}</p>
+                    </div>
+
+                    <div class="bg-black/40 border border-terminal-green/30 p-4 rounded">
+                        <h4 class="text-terminal-green font-bold mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-shield-cat"></i> วิธีป้องกัน (Prevention):
+                        </h4>
+                        <p class="text-terminal-green leading-relaxed font-semibold">${item.prevention}</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-between items-center pt-4 border-t border-terminal-green/20">
+                    <button onclick="copyDetail('${item.title}', '${item.shortDesc}')" class="bg-terminal-darkGreen border border-terminal-green text-terminal-green px-4 py-2 rounded text-xs hover:bg-terminal-green hover:text-black transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-copy"></i> คัดลอกข้อมูลสรุป
+                    </button>
+                    <button onclick="closeModal()" class="bg-black border border-terminal-dimGreen text-terminal-dimGreen px-4 py-2 rounded text-xs hover:text-terminal-green hover:border-terminal-green transition-all">
+                        ปิดหน้าต่าง
+                    </button>
+                </div>
+            `;
+            detailModal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            detailModal.classList.add('hidden');
+        }
+
+        // Close modal on outside click
+        detailModal.addEventListener('click', (e) => {
+            if(e.target === detailModal) {
+                closeModal();
+            }
+        });
+
+        // Toast Message Notification (Replacing alert)
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Copy functionality using standard fallback
+        function copyDetail(title, desc) {
+            const textToCopy = `หัวข้อ: ${title}\nรายละเอียด: ${desc}\nอ้างอิงจากระบบ ALL HACK`;
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("คัดลอกข้อมูลเรียบร้อยแล้ว!");
+            } catch (err) {
+                showToast("ไม่สามารถคัดลอกได้");
+            }
+            document.body.removeChild(textArea);
+        }
+    </script>
+</body>
+</html>
